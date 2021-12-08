@@ -14,6 +14,13 @@
  * limitations under the License.
  */
 
+interface distinguishedName {
+  commonName: string,
+  organizationName: string,
+  organizationUnit: string,
+  countryCode: string,
+}
+
 /**
  * The distinguished name class for generating an x509 certificate. This class allows users to
  * generate a distinguished name which they can then use as input into the keytool suite to
@@ -21,15 +28,12 @@
  */
 export class DName {
   constructor(
-    readonly commonName: string,
-    readonly organizationName: string,
-    readonly organizationUnit: string,
-    readonly country: string,
+    readonly attr: distinguishedName
   ) {
-    this.validateInput(commonName, 1, 0);
-    this.validateInput(organizationName, 1, 0);
-    this.validateInput(organizationUnit, 1, 0);
-    this.validateInput(country, 1, 2);
+    this.validateInput(attr.commonName, 1, 0);
+    this.validateInput(attr.organizationName, 1, 0);
+    this.validateInput(attr.organizationUnit, 1, 0);
+    this.validateInput(attr.countryCode, 1, 2);
   }
 
   /**

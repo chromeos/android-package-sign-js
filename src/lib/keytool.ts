@@ -39,19 +39,19 @@ export async function generatex509(dname: DName, password: string): Promise<stri
   const opt = [
     {
       shortName: 'CN',
-      value: dname.commonName,
+      value: dname.attr.commonName,
     },
     {
       shortName: 'OU',
-      value: dname.organizationUnit,
+      value: dname.attr.organizationUnit,
     },
     {
       shortName: 'O',
-      value: dname.organizationName,
+      value: dname.attr.organizationName,
     },
     {
       shortName: 'C',
-      value: dname.country,
+      value: dname.attr.countryCode,
     },
   ];
   cert.setSubject(opt);
