@@ -60,3 +60,17 @@ function concatString(word: string, substring: string, insertionPoint: number): 
   const endPhrase = word.substr(insertionPoint, word.length);
   return beginningPhrase.concat(substring, endPhrase);
 }
+
+/**
+ * Formats the alias for writing to the zip file.
+ *
+ * @param alias - The alias that we want to format to the specification.
+ * @returns The formatted alias.
+ */
+export function formatAlias(alias: string): string {
+  let returnAlias = alias;
+  if (alias.length > 8) {
+    returnAlias = alias.substr(0, 8);
+  }
+  return returnAlias.toUpperCase()
+}

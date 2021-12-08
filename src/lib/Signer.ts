@@ -14,24 +14,28 @@
  * limitations under the License.
  */
 
- import { util } from "node-forge";
- import { SignString, Zip } from "..";
+import { util } from "node-forge";
+import { Zip } from "./Zip";
+import { SignString } from "./keytool";
+import { formatAlias } from "./util";
  
- async function SignPackage(zipBlob:File, password:string, b64DerKeystore: string, creator:string, alias: string): Promise<string> {
-     const zip = await Zip.loadAsync(zipBlob);
-     const mf = await zip.generateManifest(creator);
-     const sf = await zip.generateSignatureFile(creator);
-     zip.addFileToZip(new Blob([mf]), 'META-INF/MANIFEST.MF');
-     zip.addFileToZip(new Blob([sf]), 'META-INF/ANDROID.SF');
-     
-     const p12der = util.decode64(b64DerKeystore);
-     const signed = SignString(
-         sf,
-         p12der,
-         password,
-         alias,
-       );
-     zip.addFileToZip(signed, 'META-INF/ANDROID.RSA', true);
-     const b64outputzip = await zip.exportZipAsBase64();
-     return 'data:application/zip;base64,' + b64outputzip;
- }
+async function SignPackage(zipBlob:File, password:string, b64DerKeystore: string, creator:string, alias: string): Promise<string> {
+    const zip = await Zip.loadAsync(zipBlob);
+    const mf = await zip.generateManifest(creator);
+    const sf = await zip.generateSignatureFile(creator);
+    const formattedAlias = formatAlias(alias);
+    
+    zip.addFileToZip(new Blob([mf]), 'META-INF/MANIFEST.MF');
+    zip.addFileToZip(new Blob([sf]), `META-INF/${formattedAlias}.SF`);
+    
+    const p12der = util.decode64(b64DerKeystore);
+    const signed = SignString(
+        sf,
+        p12der,
+        password,
+        alias,
+    );
+    zip.addFileToZip(signed, `META-INF/${formattedAlias}.RSA`, true);
+    const b64outputzip = await zip.exportZipAsBase64();
+    return 'data:application/zip;base64,' + b64outputzip;
+}
