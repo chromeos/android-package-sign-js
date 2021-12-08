@@ -28,7 +28,7 @@ import { DName } from './DName';
  * @param password - password to protect your key
  * @returns A promise of a base64 encoded pkcs12 der certificate.
  */
-export async function generatex509(dname: DName, password: string): Promise<string> {
+export async function generateKey(dname: DName, password: string, alias: string = "android"): Promise<string> {
   const keys = await pki.rsa.generateKeyPair({ bits: 2048, workers: 2 });
   let cert = pki.createCertificate();
   cert.serialNumber = generateSerialNumber();
@@ -65,7 +65,7 @@ export async function generatex509(dname: DName, password: string): Promise<stri
   // aes256 algorithm not supported on JDK 8
   const asnResult = pkcs12.toPkcs12Asn1(keys.privateKey, [cert], password, {
     algorithm: 'aes256',
-    friendlyName: 'android',
+    friendlyName: alias,
     generateLocalKeyId: true,
   });
   const p12der = asn1.toDer(asnResult).getBytes();
