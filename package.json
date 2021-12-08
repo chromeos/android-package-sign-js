@@ -1,0 +1,50 @@
+{
+  "name": "keytool",
+  "author": "Alexander Paul Nohe",
+  "license": "Apache-2.0",
+  "version": "0.1.0",
+  "description": "Implementation of android package signing with zipalign that runs in a browser",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -p .",
+    "test": "tsc -p . && jasmine-ts",
+    "js:lint": "eslint .",
+    "js:fix": "eslint . --fix",
+    "prettier:lint": "prettier -c .",
+    "prettier:fix": "prettier --write .",
+    "start": "node dist/index.js"
+  },
+  "files": [
+    "dist/lib",
+    "dist/index.d.ts",
+    "dist/index.js"
+  ],
+  "keywords": [
+    "zipalign",
+    "android",
+    "packagesigning"
+  ],
+  "dependencies": {
+    "@types/node-forge": "^0.10.4",
+    "buffer": "^6.0.3",
+    "jszip": "^3.7.1",
+    "node-forge": "^0.10.0"
+  },
+  "devDependencies": {
+    "@types/jasmine": "^3.9.1",
+    "@types/node": "^16.11.6",
+    "@typescript-eslint/eslint-plugin": "^5.3.1",
+    "@typescript-eslint/parser": "^5.3.1",
+    "eslint": "^7.32.0",
+    "eslint-config-google": "^0.14.0",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "jasmine": "^3.9.0",
+    "jasmine-spec-reporter": "^7.0.0",
+    "jasmine-ts": "^0.4.0",
+    "prettier": "^2.4.1",
+    "ts-node": "^10.2.1",
+    "typescript": "^4.3.2"
+  }
+}
