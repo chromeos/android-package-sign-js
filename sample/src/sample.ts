@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import { util } from 'node-forge';
 import { PackageSigner } from '../../dist/index';
 const generateButton: HTMLButtonElement = document.querySelector('#generate') as HTMLButtonElement;
 const loadBundleButton: HTMLButtonElement = document.querySelector(
