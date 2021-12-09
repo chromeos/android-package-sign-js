@@ -72,5 +72,5 @@ export function formatAlias(alias: string): string {
   if (alias.length > 8) {
     returnAlias = alias.substr(0, 8);
   }
-  return returnAlias.toUpperCase()
+  return returnAlias.toUpperCase();
 }

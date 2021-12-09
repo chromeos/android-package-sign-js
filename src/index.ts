@@ -14,6 +14,4 @@
  * limitations under the License.
  */
 
-export * from './lib/DName';
-export * from './lib/keytool';
-export * from './lib/Zip';
+export * from './lib/package-signer';

@@ -64,5 +64,4 @@ describe('Util Suite', () => {
     const output = formatAlias(input);
     expect(output).toBe('HELLOWOR');
   });
-
 });

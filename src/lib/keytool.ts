@@ -28,7 +28,11 @@ import { DName } from './DName';
  * @param password - password to protect your key
  * @returns A promise of a base64 encoded pkcs12 der certificate.
  */
-export async function generateKey(dname: DName, password: string, alias: string = "android"): Promise<string> {
+export async function generateX509(
+  dname: DName,
+  password: string,
+  alias: string = 'android',
+): Promise<string> {
   const keys = await pki.rsa.generateKeyPair({ bits: 2048, workers: 2 });
   let cert = pki.createCertificate();
   cert.serialNumber = generateSerialNumber();
@@ -39,19 +43,19 @@ export async function generateKey(dname: DName, password: string, alias: string 
   const opt = [
     {
       shortName: 'CN',
-      value: dname.attr.commonName,
+      value: dname.commonName,
     },
     {
       shortName: 'OU',
-      value: dname.attr.organizationUnit,
+      value: dname.organizationUnit,
     },
     {
       shortName: 'O',
-      value: dname.attr.organizationName,
+      value: dname.organizationName,
     },
     {
       shortName: 'C',
-      value: dname.attr.countryCode,
+      value: dname.countryCode,
     },
   ];
   cert.setSubject(opt);

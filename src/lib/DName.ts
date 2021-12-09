@@ -14,43 +14,34 @@
  * limitations under the License.
  */
 
-interface distinguishedName {
-  commonName: string,
-  organizationName: string,
-  organizationUnit: string,
-  countryCode: string,
+export interface DName {
+  commonName: string;
+  organizationName: string;
+  organizationUnit: string;
+  countryCode: string;
+}
+
+export function validateDName(dname: DName) {
+  validateInput(dname.commonName, 1, 0);
+  validateInput(dname.organizationName, 1, 0);
+  validateInput(dname.organizationUnit, 1, 0);
+  validateInput(dname.countryCode, 1, 2);
 }
 
 /**
- * The distinguished name class for generating an x509 certificate. This class allows users to
- * generate a distinguished name which they can then use as input into the keytool suite to
- * generate their certificates for signing their uploads.
+ * Performs simple length validation of the inputs to the distinguished name. Throws an error
+ * if the input cannot be validated.
+ *
+ * @param content - The input to be validated.
+ * @param minLength - The minimum length of the input to validate
+ * @param maxLength - The maximum length of the output to validate (can be 0 for unlimited
+ * length).
  */
-export class DName {
-  constructor(
-    readonly attr: distinguishedName
-  ) {
-    this.validateInput(attr.commonName, 1, 0);
-    this.validateInput(attr.organizationName, 1, 0);
-    this.validateInput(attr.organizationUnit, 1, 0);
-    this.validateInput(attr.countryCode, 1, 2);
+export function validateInput(content: string, minLength: number, maxLength: number) {
+  if (content.length > maxLength && maxLength != 0) {
+    throw new Error(`${content} exceeded the maxLength of ${maxLength}`);
   }
-
-  /**
-   * Performs simple length validation of the inputs to the distinguished name. Throws an error
-   * if the input cannot be validated.
-   *
-   * @param content - The input to be validated.
-   * @param minLength - The minimum length of the input to validate
-   * @param maxLength - The maximum length of the output to validate (can be 0 for unlimited
-   * length).
-   */
-  private validateInput(content: string, minLength: number, maxLength: number) {
-    if (content.length > maxLength && maxLength != 0) {
-      throw new Error(`${content} exceeded the maxLength of ${maxLength}`);
-    }
-    if (content.length < minLength) {
-      throw new Error(`${content} needs to be longer than ${minLength}`);
-    }
+  if (content.length < minLength) {
+    throw new Error(`${content} needs to be longer than ${minLength}`);
   }
 }
