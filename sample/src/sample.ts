@@ -93,7 +93,6 @@ let keySet = false;
             return;
           }
           p12b64Der = fileReader.result.toString();
-          console.log(p12b64Der);
           b64outputzip = await packageSigner.signPackage(zipBlob, p12b64Der, creator);
           setOutputZip(b64outputzip);
         };
