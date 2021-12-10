@@ -70,8 +70,16 @@ let keySet = false;
     keySet = true;
   }
 
+  function setOutputZip(zipBase64: string) {
+    const resultBundle = document.getElementById('signedPackageOutput') as HTMLAnchorElement;
+    resultBundle.href = zipBase64;
+    resultBundle.download = ext != '' ? 'outputFile.' + ext : 'outputFile.' + 'aab';
+    resultBundle.innerText = 'Signed package';
+  }
+
   signBundleButton.onclick = async function () {
     let p12b64Der = '';
+    let b64outputzip = '';
     if (!keySet) {
       let fileHandle;
       [fileHandle] = await window.showOpenFilePicker();
@@ -85,23 +93,19 @@ let keySet = false;
             return;
           }
           p12b64Der = fileReader.result.toString();
+          console.log(p12b64Der);
+          b64outputzip = await packageSigner.signPackage(zipBlob, p12b64Der, creator);
+          setOutputZip(b64outputzip);
         };
       }
       packageSigner = new PackageSigner(
         (document.getElementById('certpw') as HTMLInputElement).value,
         (document.getElementById('alias') as HTMLInputElement).value,
       );
-    }
-    let b64outputzip = '';
-    if (p12b64Der == '') {
-      b64outputzip = await packageSigner.signPackage(zipBlob, undefined, creator);
     } else {
-      b64outputzip = await packageSigner.signPackage(zipBlob, p12b64Der, creator);
+      b64outputzip = await packageSigner.signPackage(zipBlob, undefined, creator);
+      setOutputZip(b64outputzip);
     }
-    const resultBundle = document.getElementById('signedPackageOutput') as HTMLAnchorElement;
-    resultBundle.href = b64outputzip;
-    resultBundle.download = ext != '' ? 'outputFile.' + ext : 'outputFile.' + 'aab';
-    resultBundle.innerText = 'Signed package';
   };
 
   loadBundleButton.onclick = async function () {
