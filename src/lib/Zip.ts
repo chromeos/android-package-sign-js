@@ -49,7 +49,7 @@ export class Zip {
       files.push(file);
     });
     for (let f of files) {
-      if (f.name.startsWith('META-INF')) {
+      if (f.name.startsWith('META-INF/MANIFEST.MF')) {
         // These files will be overwritten when we re-sign the package and the
         // overall signature would change. This is why we skip these.
         this.previouslySigned = true;
