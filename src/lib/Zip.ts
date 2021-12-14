@@ -28,6 +28,7 @@ export class Zip {
   private zip: JSZip;
   private entries: BundleEntry[] = [];
   private signedFile: SignedFiles | undefined;
+  private previouslySigned: boolean = false;
 
   /**
    *
@@ -48,6 +49,12 @@ export class Zip {
       files.push(file);
     });
     for (let f of files) {
+      if (f.name.startsWith('META-INF')) {
+        // These files will be overwritten when we re-sign the package and the
+        // overall signature would change. This is why we skip these.
+        this.previouslySigned = true;
+        continue;
+      }
       if (!f.dir) {
         const binaryString = await f.async('binarystring');
         const entry = new BundleEntry(f.name, SHA256ForString(binaryString));
@@ -162,4 +169,9 @@ export class Zip {
 
     return new Blob(chunks);
   }
+
+  isPreviouslySigned(): boolean {
+    return this.previouslySigned;
+  }
+  
 }
