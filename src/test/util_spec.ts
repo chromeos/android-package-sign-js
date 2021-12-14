@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { wrapLongStrings } from '../lib/util';
+import { formatAlias, wrapLongStrings } from '../lib/util';
 
 describe('Util Suite', () => {
   it('short words are not modified', () => {
@@ -57,5 +57,11 @@ describe('Util Suite', () => {
     const input = 'Name: base/res/drawable-xhdpi-v4/notify_panel_notification_icon_bg.png';
     const output = wrapLongStrings(input);
     expect(output).toBe(input);
+  });
+
+  it('formats the alias correctly', () => {
+    const input = 'HELLOWORLD';
+    const output = formatAlias(input);
+    expect(output).toBe('HELLOWOR');
   });
 });

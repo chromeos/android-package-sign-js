@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import { util } from 'node-forge';
-import { DName, generatex509, SignString, Zip } from '../../dist/index';
+import { PackageSigner } from '../../dist/index';
 const generateButton: HTMLButtonElement = document.querySelector('#generate') as HTMLButtonElement;
 const loadBundleButton: HTMLButtonElement = document.querySelector(
   '#loadBundle',
@@ -28,9 +27,12 @@ const status: HTMLSpanElement = document.querySelector('#status') as HTMLSpanEle
 const aliasSpan: HTMLSpanElement = document.querySelector('#alias-span') as HTMLSpanElement;
 const certpwSpan: HTMLSpanElement = document.querySelector('#certpw-span') as HTMLSpanElement;
 
-let zip: Zip;
+let zipBlob: File;
 let sf: string = '';
 let ext = 'aab';
+let packageSigner: PackageSigner;
+const creator = '0.1.0 (Android App Signer JS)';
+let keySet = false;
 
 (async () => {
   generateButton.onclick = async function () {
@@ -41,6 +43,7 @@ let ext = 'aab';
       (document.getElementById('ou') as HTMLInputElement).value,
       (document.getElementById('c') as HTMLInputElement).value,
       (document.getElementById('pw') as HTMLInputElement).value,
+      (document.getElementById('aliasKeyGen') as HTMLInputElement).value,
       document.getElementById('pk12output') as HTMLAnchorElement,
     );
   };
@@ -51,58 +54,68 @@ let ext = 'aab';
     ou: string,
     c: string,
     password: string,
+    alias: string,
     downloadElement: HTMLAnchorElement,
   ) {
-    let dname = new DName(cn, on, ou, c);
-    const base64Der = await generatex509(dname, password);
+    packageSigner = new PackageSigner(password, alias);
+    const base64Der = await packageSigner.generateKey({
+      commonName: cn,
+      organizationName: on,
+      organizationUnit: ou,
+      countryCode: c,
+    });
     downloadElement.href = base64Der;
     downloadElement.download = 'generatedKey.p12';
     downloadElement.innerText = 'Download Generated Key';
+    keySet = true;
+  }
+
+  function setOutputZip(zipBase64: string) {
+    const resultBundle = document.getElementById('signedPackageOutput') as HTMLAnchorElement;
+    resultBundle.href = zipBase64;
+    resultBundle.download = ext != '' ? 'outputFile.' + ext : 'outputFile.' + 'aab';
+    resultBundle.innerText = 'Signed package';
   }
 
   signBundleButton.onclick = async function () {
-    let fileHandle;
-    [fileHandle] = await window.showOpenFilePicker();
-    const fileBlob = await fileHandle.getFile();
-    if (fileBlob) {
-      const fileReader = new FileReader();
-      fileReader.readAsDataURL(fileBlob);
-      fileReader.onload = async () => {
-        if (!fileReader.result) {
-          console.log('could not find file');
-          return;
-        }
-        const p12b64 = fileReader.result.toString().split('base64,')[1];
-        const p12der = util.decode64(p12b64);
-        const signed = SignString(
-          sf,
-          p12der,
-          (document.getElementById('certpw') as HTMLInputElement).value,
-          (document.getElementById('alias') as HTMLInputElement).value,
-        );
-        zip.addFileToZip(signed, 'META-INF/ANDROID.RSA', true);
-        const b64outputzip = await zip.exportZipAsBase64();
-        const resultBundle = document.getElementById('signedPackageOutput') as HTMLAnchorElement;
-        resultBundle.href = 'data:application/zip;base64,' + b64outputzip;
-        resultBundle.download = ext != '' ? 'outputFile.' + ext : 'outputFile.' + 'aab';
-        resultBundle.innerText = 'Signed package';
-      };
+    let p12b64Der = '';
+    let b64outputzip = '';
+    if (!keySet) {
+      let fileHandle;
+      [fileHandle] = await window.showOpenFilePicker();
+      const fileBlob = await fileHandle.getFile();
+      if (fileBlob) {
+        const fileReader = new FileReader();
+        fileReader.readAsDataURL(fileBlob);
+        fileReader.onload = async () => {
+          if (!fileReader.result) {
+            console.log('could not find file');
+            return;
+          }
+          p12b64Der = fileReader.result.toString();
+          b64outputzip = await packageSigner.signPackage(zipBlob, p12b64Der, creator);
+          setOutputZip(b64outputzip);
+        };
+      }
+      packageSigner = new PackageSigner(
+        (document.getElementById('certpw') as HTMLInputElement).value,
+        (document.getElementById('alias') as HTMLInputElement).value,
+      );
+    } else {
+      b64outputzip = await packageSigner.signPackage(zipBlob, undefined, creator);
+      setOutputZip(b64outputzip);
     }
   };
 
   loadBundleButton.onclick = async function () {
     let fileHandle;
     [fileHandle] = await window.showOpenFilePicker();
-    const zipBlob = await fileHandle.getFile();
+    zipBlob = await fileHandle.getFile();
     ext = zipBlob.name.split('.')[1];
-    const creator = '0.1.0 (Android App Signer JS)';
-    zip = await Zip.loadAsync(zipBlob);
-    const mf = await zip.generateManifest(creator);
-    sf = await zip.generateSignatureFile(creator);
-    zip.addFileToZip(new Blob([mf]), 'META-INF/MANIFEST.MF');
-    zip.addFileToZip(new Blob([sf]), 'META-INF/ANDROID.SF');
     signBundleButton.setAttribute('style', '');
-    certpwSpan.setAttribute('style', '');
-    aliasSpan.setAttribute('style', '');
+    if (!keySet) {
+      certpwSpan.setAttribute('style', '');
+      aliasSpan.setAttribute('style', '');
+    }
   };
 })();
