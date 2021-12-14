@@ -76,12 +76,3 @@ export class PackageSigner {
     return 'data:application/zip;base64,' + b64outputzip;
   }
 }
-
-// How to use!
-// import {PackageSigner} from 'android-package-sign-js'import { validateDName } from './DName.js';
-// import { generateX509 as generateX509 } from './keytool.js';
-// '
-// const signer = new PackageSigner('hello world');
-// const key = await signer.generateKey({commonName: 'Sam'});
-// console.log(key);
-// const signedPackage = await signer.signPackage(zip);
