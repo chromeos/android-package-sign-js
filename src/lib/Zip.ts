@@ -173,5 +173,4 @@ export class Zip {
   isPreviouslySigned(): boolean {
     return this.previouslySigned;
   }
-  
 }
