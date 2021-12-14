@@ -70,7 +70,7 @@ Generate a signing key for your Android app:
 
 ```typescript
 import { PackageSigner } from 'android-package-sign-js/index';
-async function keyGen(): Promise&lt;string> {
+async function keyGen(): Promise<string> {
   const packageSigner = new PackageSigner(password, alias);
   const base64Der = await packageSigner.generateKey({
       commonName: “Alexander Nohe”,
