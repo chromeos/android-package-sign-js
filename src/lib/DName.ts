@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import { InputValidationError } from './Errors';
+
 export interface DName {
   commonName: string;
   organizationName: string;
@@ -39,9 +41,9 @@ export function validateDName(dname: DName) {
  */
 export function validateInput(content: string, minLength: number, maxLength: number) {
   if (content.length > maxLength && maxLength != 0) {
-    throw new Error(`${content} exceeded the maxLength of ${maxLength}`);
+    throw new InputValidationError(`${content} exceeded the maxLength of ${maxLength}`);
   }
   if (content.length < minLength) {
-    throw new Error(`${content} needs to be longer than ${minLength}`);
+    throw new InputValidationError(`${content} needs to be longer than ${minLength}`);
   }
 }

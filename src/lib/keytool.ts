@@ -16,6 +16,7 @@
 
 import { asn1, md, pkcs12, pkcs7, pki, util, random } from 'node-forge';
 import { DName } from './DName';
+import { KeyGenerationError } from './Errors';
 
 /**
  * This generates a x509 sigining certificate for code signing. It is the users responsibility to
@@ -149,7 +150,7 @@ function getCert(bags: pkcs12.Bag[] | undefined): pki.Certificate {
       return bags[0].cert;
     }
   }
-  throw new Error('could not locate certificate from pkcs12 keystore');
+  throw new KeyGenerationError('could not locate certificate from pkcs12 keystore');
 }
 
 /**
@@ -164,5 +165,5 @@ function getKey(bags: pkcs12.Bag[] | undefined): pki.PrivateKey {
       return bags[0].key;
     }
   }
-  throw new Error('could not locate key from pkcs12 keystore');
+  throw new KeyGenerationError('could not locate key from pkcs12 keystore');
 }

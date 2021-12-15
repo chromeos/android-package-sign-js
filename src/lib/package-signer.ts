@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-import { validateDName, DName, validateInput } from './DName.js';
-import { formatAlias } from './util.js';
+import { validateDName, DName, validateInput } from './DName';
+import { formatAlias } from './util';
+import { KeyGenerationError, KeyReadingError, ZipError } from './Errors';
 
 const VERSION = '__REPLACE_ME_BUILD_STEP__';
 
@@ -39,7 +40,7 @@ export class PackageSigner {
 
     this.#base64DerKey = await generateX509(dname, this.#password, this.#alias);
     if (!this.#base64DerKey) {
-      throw Error('Key failed to generate.');
+      throw new KeyGenerationError('Key failed to generate.');
     }
     // Return key here to users can save to device
     return this.#base64DerKey;
@@ -53,7 +54,7 @@ export class PackageSigner {
     // Check to see if a key was built in a previous step.
     let key = base64DerKey || this.#base64DerKey;
     if (!key) {
-      throw new Error('no base64 der encoded keystore found');
+      throw new KeyReadingError('no base64 der encoded keystore found');
     }
     key = key.split('base64,')[1];
     // Async import
@@ -61,7 +62,7 @@ export class PackageSigner {
     const zip = await Zip.loadAsync(zipBlob);
     const mf = await zip.generateManifest(creator);
     if (zip.isPreviouslySigned()) {
-      throw new Error('Package was previously signed. Will not sign new package');
+      throw new ZipError('Package was previously signed. Will not sign new package');
     }
     const sf = await zip.generateSignatureFile(creator);
     const formattedAlias = formatAlias(this.#alias);
