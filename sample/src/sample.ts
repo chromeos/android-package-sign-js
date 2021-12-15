@@ -28,7 +28,6 @@ const aliasSpan: HTMLSpanElement = document.querySelector('#alias-span') as HTML
 const certpwSpan: HTMLSpanElement = document.querySelector('#certpw-span') as HTMLSpanElement;
 
 let zipBlob: File;
-let sf: string = '';
 let ext = 'aab';
 let packageSigner: PackageSigner;
 const creator = '0.1.0 (Android App Signer JS)';
@@ -58,16 +57,24 @@ let keySet = false;
     downloadElement: HTMLAnchorElement,
   ) {
     packageSigner = new PackageSigner(password, alias);
-    const base64Der = await packageSigner.generateKey({
-      commonName: cn,
-      organizationName: on,
-      organizationUnit: ou,
-      countryCode: c,
-    });
-    downloadElement.href = base64Der;
-    downloadElement.download = 'generatedKey.p12';
-    downloadElement.innerText = 'Download Generated Key';
-    keySet = true;
+    try {
+      setStatus('Starting key generation with specified parameters...');
+      const base64Der = await packageSigner.generateKey({
+        commonName: cn,
+        organizationName: on,
+        organizationUnit: ou,
+        countryCode: c,
+      });
+      setStatus(
+        'Key generation complete. Download this key before continuing demo 2. Key will automatically be reused for demo 2.',
+      );
+      downloadElement.href = base64Der;
+      downloadElement.download = 'generatedKey.p12';
+      downloadElement.innerText = 'Download Generated Key';
+      keySet = true;
+    } catch (err: any) {
+      setStatus(`Key generation failed : ${err}`);
+    }
   }
 
   function setOutputZip(zipBase64: string) {
@@ -77,40 +84,63 @@ let keySet = false;
     resultBundle.innerText = 'Signed package';
   }
 
+  function setStatus(message: string = '') {
+    showStatus();
+    status.innerText = message;
+  }
+
+  function showStatus() {
+    statusVisSpan.style.display = '';
+  }
+
   signBundleButton.onclick = async function () {
-    let p12b64Der = '';
-    let b64outputzip = '';
-    if (!keySet) {
-      let fileHandle;
-      [fileHandle] = await window.showOpenFilePicker();
-      const fileBlob = await fileHandle.getFile();
-      if (fileBlob) {
-        const fileReader = new FileReader();
-        fileReader.readAsDataURL(fileBlob);
-        fileReader.onload = async () => {
-          if (!fileReader.result) {
-            console.log('could not find file');
-            return;
-          }
-          p12b64Der = fileReader.result.toString();
-          b64outputzip = await packageSigner.signPackage(zipBlob, p12b64Der, creator);
-          setOutputZip(b64outputzip);
-        };
+    try {
+      let p12b64Der = '';
+      let b64outputzip = '';
+      setStatus('Checking for a key');
+      if (!keySet) {
+        setStatus('No key found, asking user to select one');
+        let fileHandle;
+        [fileHandle] = await window.showOpenFilePicker();
+        const fileBlob = await fileHandle.getFile();
+        setStatus('Decoding key');
+        if (fileBlob) {
+          const fileReader = new FileReader();
+          fileReader.readAsDataURL(fileBlob);
+          fileReader.onload = async () => {
+            if (!fileReader.result) {
+              setStatus('No file found to decode');
+              return;
+            }
+            setStatus('Reading key as base64');
+            p12b64Der = fileReader.result.toString();
+            setStatus('Signing package with key');
+            b64outputzip = await packageSigner.signPackage(zipBlob, p12b64Der, creator);
+            setStatus('Creating download link');
+            setOutputZip(b64outputzip);
+          };
+        }
+        packageSigner = new PackageSigner(
+          (document.getElementById('certpw') as HTMLInputElement).value,
+          (document.getElementById('alias') as HTMLInputElement).value,
+        );
+      } else {
+        b64outputzip = await packageSigner.signPackage(zipBlob, undefined, creator);
+        setOutputZip(b64outputzip);
       }
-      packageSigner = new PackageSigner(
-        (document.getElementById('certpw') as HTMLInputElement).value,
-        (document.getElementById('alias') as HTMLInputElement).value,
-      );
-    } else {
-      b64outputzip = await packageSigner.signPackage(zipBlob, undefined, creator);
-      setOutputZip(b64outputzip);
+    } catch (err: any) {
+      setStatus(`Package signing failed : ${err}`);
     }
   };
 
   loadBundleButton.onclick = async function () {
+    setStatus('Loading a user bundle. Waiting for user to supply bundle');
     let fileHandle;
     [fileHandle] = await window.showOpenFilePicker();
     zipBlob = await fileHandle.getFile();
+    setStatus(
+      'Bundle supplied! Waiting for user to enter key info (if none provided) and load key. Otherwise, waiting for user to sign bundle with existing key.',
+    );
     ext = zipBlob.name.split('.')[1];
     signBundleButton.setAttribute('style', '');
     if (!keySet) {
