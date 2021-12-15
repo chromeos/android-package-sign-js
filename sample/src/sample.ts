@@ -56,9 +56,10 @@ let keySet = false;
     alias: string,
     downloadElement: HTMLAnchorElement,
   ) {
+    showStatus();
     setStatus('Starting key generation with specified parameters...');
-    packageSigner = new PackageSigner(password, alias);
     try {
+      packageSigner = new PackageSigner(password, alias);
       const base64Der = await packageSigner.generateKey({
         commonName: cn,
         organizationName: on,
@@ -85,7 +86,7 @@ let keySet = false;
   }
 
   function setStatus(message: string = '') {
-    showStatus();
+    console.log(message);
     status.innerText = message;
   }
 
@@ -94,6 +95,7 @@ let keySet = false;
   }
 
   signBundleButton.onclick = async function () {
+    showStatus();
     try {
       let p12b64Der = '';
       let b64outputzip = '';
@@ -118,6 +120,7 @@ let keySet = false;
             b64outputzip = await packageSigner.signPackage(zipBlob, p12b64Der, creator);
             setStatus('Creating download link');
             setOutputZip(b64outputzip);
+            setStatus('Bundle signed and ready for download');
           };
         }
         packageSigner = new PackageSigner(
