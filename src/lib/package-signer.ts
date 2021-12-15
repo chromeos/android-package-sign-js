@@ -60,6 +60,9 @@ export class PackageSigner {
     const { Zip } = await import('./Zip');
     const zip = await Zip.loadAsync(zipBlob);
     const mf = await zip.generateManifest(creator);
+    if (zip.isPreviouslySigned()) {
+      throw new Error('Package was previously signed. Will not sign new package');
+    }
     const sf = await zip.generateSignatureFile(creator);
     const formattedAlias = formatAlias(this.#alias);
 
