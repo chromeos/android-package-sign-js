@@ -56,9 +56,9 @@ let keySet = false;
     alias: string,
     downloadElement: HTMLAnchorElement,
   ) {
+    setStatus('Starting key generation with specified parameters...');
     packageSigner = new PackageSigner(password, alias);
     try {
-      setStatus('Starting key generation with specified parameters...');
       const base64Der = await packageSigner.generateKey({
         commonName: cn,
         organizationName: on,
