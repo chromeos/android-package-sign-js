@@ -29,6 +29,9 @@ export class PackageSigner {
   constructor(password: string, readonly alias: string = 'android') {
     validateInput(password, 6, 0);
     this.#password = password;
+    if (alias.trim() == '') {
+      this.#password = 'android';
+    }
     this.#alias = alias;
     this.version = VERSION;
   }

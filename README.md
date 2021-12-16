@@ -101,7 +101,7 @@ function loadStoredKeystore(): string {
   // returns a base64 encoded keystore that was previously loaded
 }
 
-async function signBundle(): Promise&lt;string> {
+async function signBundle(): Promise<string> {
   const packageSigner = new PackageSigner(password, alias);
   let fileHandle;
   [fileHandle] = await window.showOpenFilePicker();
