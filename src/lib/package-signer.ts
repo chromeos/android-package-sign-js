@@ -28,6 +28,9 @@ export class PackageSigner {
   constructor(password: string, readonly alias: string = 'android') {
     validateInput(password, 6, 0);
     this.#password = password;
+    if (alias.trim() == '') {
+      this.#password = 'android';
+    }
     this.#alias = alias;
     this.version = VERSION;
   }
@@ -61,7 +64,7 @@ export class PackageSigner {
     const zip = await Zip.loadAsync(zipBlob);
     const mf = await zip.generateManifest(creator);
     if (zip.isPreviouslySigned()) {
-      throw new Error('Package was previously signed. Will not sign new package');
+      throw new Error('Package was previously signed. Will not sign package');
     }
     const sf = await zip.generateSignatureFile(creator);
     const formattedAlias = formatAlias(this.#alias);

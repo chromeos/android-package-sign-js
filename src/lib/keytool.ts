@@ -95,7 +95,6 @@ function generateSerialNumber(): string {
   // Forge wraps the above api in their random library, so we defer to that.
   // Prevents negative numbers. while staying in the 20 octet range.
   let hexString = '00' + util.bytesToHex(random.getBytesSync(19));
-  console.log(hexString); // sanity check
   return hexString;
 }
 
