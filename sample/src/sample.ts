@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { PackageSigner } from '../../dist/index';
+import { PackageSigner } from '@chromeos/android-package-signer';
 const generateButton: HTMLButtonElement = document.querySelector('#generate') as HTMLButtonElement;
 const loadBundleButton: HTMLButtonElement = document.querySelector(
   '#loadBundle',
