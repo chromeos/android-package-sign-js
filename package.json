@@ -2,7 +2,7 @@
   "name": "@chromeos/android-package-signer",
   "author": "Alexander Paul Nohe",
   "license": "Apache-2.0",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "description": "Implementation of android package signing with zipalign that runs in a browser",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
