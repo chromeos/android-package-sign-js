@@ -4,6 +4,12 @@
 
 `android-package-sign-js` allows developers to generate signing keys and sign their Android packages (APK and AAB) in a browser.
 
+# Use android-package-signer in a project
+
+```
+npm i @chromeos/android-package-signer
+```
+
 # To build the package
 
 ```
@@ -69,7 +75,7 @@ async signPackage(
 Generate a signing key for your Android app:
 
 ```typescript
-import { PackageSigner } from 'android-package-sign-js/index';
+import { PackageSigner } from '@chromeos/android-package-signer';
 async function keyGen(): Promise<string> {
   const packageSigner = new PackageSigner(password, alias);
   const base64Der = await packageSigner.generateKey({
@@ -95,7 +101,7 @@ async function keyGen(): Promise<string> {
 To sign Android App Bundles and APKs with v1 signing can be called like this:
 
 ```typescript
-import { PackageSigner } from 'android-package-sign-js/index';
+import { PackageSigner } from '@chromeos/android-package-signer';
 
 function loadStoredKeystore(): string {
   // returns a base64 encoded keystore that was previously loaded
