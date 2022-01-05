@@ -79,10 +79,10 @@ import { PackageSigner } from '@chromeos/android-package-signer';
 async function keyGen(): Promise<string> {
   const packageSigner = new PackageSigner(password, alias);
   const base64Der = await packageSigner.generateKey({
-      commonName: “Alexander Nohe”,
-      organizationName: “Google, Inc”,
-      organizationUnit: “DevRel”,
-      countryCode: “US”,
+      commonName: 'Alexander Nohe',
+      organizationName: 'Google, Inc',
+      organizationUnit: 'DevRel',
+      countryCode: 'US',
     });
 
   // To download the keys.
