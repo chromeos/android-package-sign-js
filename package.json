@@ -13,7 +13,11 @@
     "js:fix": "eslint . --fix",
     "prettier:lint": "prettier -c .",
     "prettier:fix": "prettier --write .",
-    "start": "node dist/index.js"
+    "start": "node dist/index.js",
+    "deploy": "npm run build && npm publish",
+    "deploy:patch": "npm version patch && npm run build && npm publish",
+    "deploy:minor": "npm version minor && npm run build && npm publish",
+    "deploy:major": "npm version major && npm run build && npm publish"
   },
   "files": [
     "dist/lib",
