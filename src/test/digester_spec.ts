@@ -33,14 +33,6 @@ describe('Digester Suite', () => {
     expect(output).toBe('qvn/SI4HZ9peodVhGOb2WhbFYzsM78H6CJvTqxgQYT0=');
   });
 
-  it('resources from a file is converted correctly', async () => {
-    const buf = readFileSync('src/test/data/classes.dex');
-    const bufString = buf.toString('binary');
-
-    const output = await SHA256ForString(bufString);
-    expect(output).toBe('HSpR2UidLSnTHSPHnvpBYjVCeJIzlBuPmFgUqV6/d6Q=');
-  });
-
   it('dex from a file is converted correctly', async () => {
     const buf = readFileSync('src/test/data/resources.pb');
     const os = buf.toString('binary');
