@@ -38,7 +38,7 @@
     "@types/node-forge": "^0.10.4",
     "buffer": "^6.0.3",
     "jszip": "^3.7.1",
-    "node-forge": "^0.10.0"
+    "node-forge": "^1.4.0"
   },
   "devDependencies": {
     "@types/jasmine": "^3.9.1",
